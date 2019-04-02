@@ -81,12 +81,15 @@ public class controler : MonoBehaviour
             float gy = Int32.Parse(dataRaw[4]) * gyro_normalizer_factor;
             float gz = Int32.Parse(dataRaw[5]) * gyro_normalizer_factor;
 
-            
+            //button1,2,3 press check
             if (Int32.Parse(dataRaw[6]) != 0 || Int32.Parse(dataRaw[7]) != 0 || Int32.Parse(dataRaw[8]) != 0) {
                 int bIn = Int32.Parse(dataRaw[6]) + Int32.Parse(dataRaw[7]) + Int32.Parse(dataRaw[8]);
-                MoveObject(bIn);
+                //button press method
             }
-            
+
+            //move joystick
+            MoveObject(Int32.Parse(dataRaw[9]), Int32.Parse(dataRaw[10]));
+
 
             // prevent 
             if (Mathf.Abs(ax) - 1 < 0) ax = 0;
@@ -111,18 +114,27 @@ public class controler : MonoBehaviour
         }
     }
 
-    void MoveObject(int Direction)
+    void MoveObject(int JoyX, int JoyY)
     {
-        Debug.Log("button in:"+Direction);
+        Debug.Log("stick in:X axis" + JoyX +"Y axis" + JoyY);
+        int XDelta = Math.Abs(500 - JoyX);
+        int YDelta = Math.Abs(500 - JoyY);
 
+        speed = 2+((XDelta>YDelta?XDelta:YDelta)>>6);//select bigger and set speed from that.
 
-        if (Direction == 1)
+        if (JoyX > 550 || JoyX < 450)
         {
-            transform.Translate(Vector3.left * amountToMove, Space.World);
+            if(JoyX > 550)
+                transform.Translate(Vector3.right * amountToMove, Space.World);
+            if (JoyX < 450)
+                transform.Translate(Vector3.left * amountToMove, Space.World);
         }
-        if (Direction == 2)
+        if (JoyY > 550 || JoyY < 450)
         {
-            transform.Translate(Vector3.right * amountToMove, Space.World);
+            if (JoyY > 550)
+                transform.Translate(Vector3.forward * amountToMove, Space.World);
+            if (JoyY < 450)
+                transform.Translate(Vector3.back * amountToMove, Space.World);
         }
     }
 
